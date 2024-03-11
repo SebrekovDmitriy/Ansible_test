@@ -1,0 +1,9 @@
+- hosts: webservers
+  tasks:
+    - name: add user ansible-worker
+      user:
+        name: ansible-worker
+        shell: /bin/bash
+        groups: root
+        append: yes
+      become: yes # <---
