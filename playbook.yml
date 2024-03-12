@@ -1,4 +1,4 @@
-- hosts: webservers
+- hosts: all
   tasks:
     - name: add user ansible-worker
       user:
@@ -7,3 +7,28 @@
         groups: root
         append: yes
       become: yes # <---
+    - name: install git
+      ansible.builtin.apt:
+        name: git
+        state: present
+        update_cache: yes
+      become: yes # <---
+    - name: install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
+      become: yes
+    - name: update nginx config
+      ansible.builtin.copy:
+        src: ansible.iphilka.ru.conf
+        dest: /etc/nginx/sites-available/ansible.iphilka.ru.conf
+      notify:
+        - restart nginx
+      become: yes
+
+  handlers:
+    - name: restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      become: yes
