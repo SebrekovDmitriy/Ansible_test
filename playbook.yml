@@ -1,12 +1,11 @@
 - hosts: all
   tasks:
     - name: add user ansible-worker
-      user:
+      ansible.builtin.user:
         name: ansible-worker
         shell: /bin/bash
-        groups: root
         append: yes
-      become: yes # <---
+      become: yes
     - name: install git
       ansible.builtin.apt:
         name: git
