@@ -1,10 +1,18 @@
 - hosts: all
   tasks:
+    - name: Ensure group "ansible-worker" exists
+      ansible.builtin.group:
+        name: ansible-worker
+        state: present
+      become: yes
+
     - name: add user ansible-worker
       ansible.builtin.user:
         name: ansible-worker
         shell: /bin/bash
         group: ansible-worker
+        shell: /bin/bash
+        groups: www-data
         append: yes
       become: yes
 
@@ -45,25 +53,24 @@
         owner: ansible-worker
         group: www-data
         mode: u=rw,g=r,o=r
-      become: yes
+      become: yes 
 
     - name: ansible-worker and www-data
       ansible.builtin.shell:
         cmd: usermod -a -G ansible-worker www-data
       become: yes
-
+      
     - name: Update nginx config
       ansible.builtin.copy:
         src: ansible.iphilka.ru.conf
         dest: /etc/nginx/sites-available/ansible.iphilka.ru.conf
-      notify:
-        - Restart nginx
-      become: yes
+      become: yes 
+
     - name: Enable  ansible.iphilka.ru.conf
       ansible.builtin.shell:
         cmd:  ln -s /etc/nginx/sites-available/ansible.iphilka.ru.conf /etc/nginx/sites-enabled/ansible.iphilka.ru.conf
-      become: yes
-  handlers:
+      become: yes  
+
     - name: Restart nginx
       ansible.builtin.service:
         name: nginx
